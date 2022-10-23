@@ -27,7 +27,6 @@ const Home = () => {
   useEffect(() => {
     getData(selected, maRecherche);
     getCategories();
-    getLocation();
   }, [selected, itemOffset, itemsPerPage, location, maRecherche]);
 
   useEffect(() => {
@@ -45,51 +44,37 @@ const Home = () => {
     // let value = e.target.value;
     setMaRecherche(e.target.value);
   };
-  const getLocation = async () => {
-    try {
-      const res = await axios.get(
-        `https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/facets?&facet=placename&facet=department&facet=region&facet=city&timezone=UTC`
-      );
-      console.log(res.data.facets, "facets");
-      setState((state) => ({
-        ...state,
-        loading: false,
-        datas: res.data.facets,
-      }));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const getData = async (refine = "sport", where = "%22Paris%22") => {
-    const res = await axios
-      .get(
-        `https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/records?rows=30`,
-        {
-          params: {
-            refine: "tags:" + refine,
-            where: '"' + where + '"',
-          },
-        }
-      )
-      .then(function (response) {
-        //   console.warn(response.data);
-        console.warn(response.data.records);
 
+  const getData = async (keywords = "", where = "Paris") => {
+    axios
+      .request({
+        method: "GET",
+        url: "https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-openagenda/records",
+        params: {
+        //   order_by: "lastdate_begin desc",
+          limit: "10",
+          offset: "0",
+          refine: [`location_city:${where}`, `keywords_fr:${keywords}`],
+          lang: "fr",
+          timezone: "Europe/Paris",
+          rows: "20",
+        },
+        headers: { accept: "application/json; charset=utf-8" },
+      })
+      .then(function (response) {
+        console.warn(response.data.records);
         setData(response.data.records);
       })
       .catch(function (error) {
         console.error(error);
       });
-    console.warn(res.data.records);
-    // setData(res.data.records);
-    // (res.data)
   };
   const getCategories = async () => {
     try {
       const res = await axios.get(
-        "https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/facets"
-      );
-      console.log(res.data);
+        "https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-openagenda/facets"
+      ); // $.facets.name
+      console.warn(res.data.facets[0].facets  );
       setCategories(res.data.facets[0].facets);
       // (res.data)
     } catch (error) {
@@ -108,7 +93,7 @@ const Home = () => {
       <div className="menu">
         <div className="filters">
           <div className="container">
-            <label htmlFor="cat">Categories:</label> <br />
+            <label htmlFor="cat">Categories :</label> <br />
             <select id="cat" value={selected} onChange={handleChange}>
               {categories.map((item, i) => (
                 <option key={i} value={item.id}>

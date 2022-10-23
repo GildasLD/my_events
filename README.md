@@ -6,6 +6,11 @@
 
 \*_Projet d'école réalisé au sein de la W@C_
 
+```
+23/10/2022 : 
+
+Les routes de l'API ont changé !
+```
 Utilisation de l'API d'Opendatasoft.
 
 - MongoDB
@@ -16,16 +21,9 @@ Utilisation de l'API d'Opendatasoft.
 ## Usage
 
 ```bash
-cd client && npm install;
-cd server && npm install;
-cd..
+npm install &&
 
-sudo mongod -f mongodb.conf # (tcp/27042)
-
-cd client &&
-npm start ;
-
-node ./server/index.js 127.0.0.1:5000 ;
+npm start;
 
 firefox http://localhost:3000/
 ```
